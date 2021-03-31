@@ -53,6 +53,43 @@ def check_if_nr_ok(grid, row, col, nr):
     return not used_in_row(grid, row, nr) and not used_in_column(grid, col, nr) and not used_in_box(grid, row, col, nr)
 
 
+# Given a partially filled sudoku grid try and solve it to meet all sudoku requirements Using a backtracking
+# algorithm assign a number from 1 to 9 to an empty space check if assigning the number to current index makes the
+# grid unsafe or not, if safe then recursively call the function for all safe cases from 0 to 9. if any recursive
+# call returns true, end the loop and return true. If no recursive call returns true then return false.
+def solve(grid):
+    # a list to keep track of empty locations
+    l = [0, 0]
+
+    # If there is no empty location we are done
+    if not empty_locations(grid, l):
+        return True
+
+    # Assigning list values to row and col
+    # that we got from the above function
+    row = l[0]
+    col = l[1]
+
+    # consider digits 1 to 9
+    for nr in range(1, 10):
+
+        # if this number can be assigned in this location
+        if check_if_nr_ok(grid, row, col, nr):
+
+            # make assignment
+            grid[row][col] = nr
+
+            # return, if success,
+            if solve(grid):
+                return True
+
+            # failure, unmake & try again
+            grid[row][col] = 0
+
+    # this triggers backtracking
+    return False
+
+
 # Main functions to test
 if __name__ == '__main__':
     # create a 9x9 grid for testing
@@ -68,4 +105,10 @@ if __name__ == '__main__':
 
     l = [0, 0]
     # print(empty_locations(grid,l),l)
-    print(check_if_nr_ok(grid, 0, 1, 9))
+    if solve(grid):
+        for i in range(9):
+            for j in range(9):
+                print(grid[i][j], end=' ')
+            print(end='\n')
+    else:
+        print("No solution found")
